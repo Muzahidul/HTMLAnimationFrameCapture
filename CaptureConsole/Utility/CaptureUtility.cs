@@ -1,18 +1,14 @@
-﻿using CefSharp;
-using CefSharp.OffScreen;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Capture
+namespace Capture.Util
 {
-    public class CaptureUtilityCef : ICaptureUtility
+    public class CaptureUtility : ICaptureUtility
     {
         private string _FilePath;
         private string _OutputPath;
@@ -23,7 +19,7 @@ namespace Capture
         private static readonly object _object = new object();
         private bool _IsBrowserReady = false;
 
-        public CaptureUtilityCef(int width, int height, string filePath, string outputPath, List<int> intervalList, int startDelay = 0)
+        public CaptureUtility(int width, int height, string filePath, string outputPath, List<int> intervalList, int startDelay = 0)
         {
             _FilePath = filePath;
             _OutputPath = outputPath;
@@ -37,51 +33,47 @@ namespace Capture
 
         public void CaptureAndSave()
         {
-            CefSettings settings = new CefSettings();
-            Cef.Initialize(settings);
-
             foreach (int interval in _OutputIntervalsInMilisecond)
             {
                 Thread thread = new Thread(delegate ()
                 {
-                    try
+                    using (WebBrowser vBrowser = new WebBrowser())
                     {
-                        using (ChromiumWebBrowser vBrowser = new ChromiumWebBrowser(_FilePath))
+                        vBrowser.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(this.OnDocumentCompleted);
+                        vBrowser.ScriptErrorsSuppressed = true;
+                        vBrowser.Width = _Width;
+                        vBrowser.Height = _Height;
+                        vBrowser.ScrollBarsEnabled = false;
+                        vBrowser.Navigate(_FilePath);
+
+                        while (!_IsBrowserReady)
                         {
-                            vBrowser.FrameLoadEnd += OnDocumentCompleted;
-                            vBrowser.Size = new Size(_Width, _Height);
+                            Application.DoEvents();
+                        }
 
-                            while (!_IsBrowserReady)
+                        Stopwatch sw = new Stopwatch();
+                        sw.Start();
+
+                        while (true)
+                        {
+                            if (sw.ElapsedMilliseconds >= interval)
                             {
-                                Application.DoEvents();
-                            }
-
-                            Stopwatch sw = new Stopwatch();
-                            sw.Start();
-
-                            while (true)
-                            {
-                                if (sw.ElapsedMilliseconds >= interval)
+                                lock (_object)
                                 {
-                                    lock (_object)
+                                    using (Graphics graphics = vBrowser.CreateGraphics())
+                                    using (Bitmap bitmap = new Bitmap(_Width, _Height, graphics))
                                     {
-                                        Bitmap bitmap = vBrowser.ScreenshotAsync().Result;
+                                        Rectangle bounds = new Rectangle(0, 0, _Width, _Height);
+                                        vBrowser.DrawToBitmap(bitmap, bounds);
                                         this.SaveScreenshot(bitmap, _OutputIntervalsInMilisecond.IndexOf(interval));
                                         vBrowser.Dispose();
                                         break;
                                     }
                                 }
-
-                                Application.DoEvents();
                             }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
 
-                    }
-                    finally
-                    {
+                            Application.DoEvents();
+                        }
                     }
                 });
 
@@ -89,10 +81,9 @@ namespace Capture
                 thread.Start();
                 thread.Join();
             }
-            Cef.Shutdown();
         }
 
-        private void OnDocumentCompleted(object sender, FrameLoadEndEventArgs e)
+        private void OnDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             _IsBrowserReady = true;
         }

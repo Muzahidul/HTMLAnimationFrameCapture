@@ -1,4 +1,4 @@
-﻿namespace Capture
+﻿namespace Capture.Util
 {
     public interface ICaptureUtility
     {

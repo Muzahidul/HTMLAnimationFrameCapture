@@ -1,4 +1,5 @@
 ﻿using Capture;
+using Capture.Util;
 using System.Collections.Generic;
 using System.Configuration;
 
@@ -34,7 +35,6 @@ namespace Capture
                 captureUtility = new CaptureUtilityCef(captureWidth, captureHeight, filePath, outputPath, outputIntervalsInMilisecond, startDelay);
             }
 
-            //CaptureUtility captureUtility = new CaptureUtility(captureWidth, captureHeight, filePath, outputPath, outputIntervalsInMilisecond, startDelay);
             captureUtility.CaptureAndSave();
         }
     }
