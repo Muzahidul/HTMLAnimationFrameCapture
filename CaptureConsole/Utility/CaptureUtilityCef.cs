@@ -48,7 +48,6 @@ namespace Capture.Util
                     {
                         using (ChromiumWebBrowser vBrowser = new ChromiumWebBrowser(_FilePath))
                         {
-                            vBrowser.FrameLoadEnd += OnDocumentCompleted;
                             vBrowser.FrameLoadEnd += OnBrowserFrameLoadEnd;
                             vBrowser.Size = new Size(_Width, _Height);
 
@@ -94,11 +93,6 @@ namespace Capture.Util
         }
 
         //TODO: Need to check it for all browser instances
-        private void OnDocumentCompleted(object sender, FrameLoadEndEventArgs e)
-        {
-            _IsBrowserReady = true;
-        }
-
         private void OnBrowserFrameLoadEnd(object sender, FrameLoadEndEventArgs args)
         {
             if (args.Frame.IsMain)
@@ -113,6 +107,7 @@ namespace Capture.Util
                     }
                 }
             }
+            _IsBrowserReady = true;
         }
 
         private void SaveScreenshot(Bitmap bitmap, int sequence)
