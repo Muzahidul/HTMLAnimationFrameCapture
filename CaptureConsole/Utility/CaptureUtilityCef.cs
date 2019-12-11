@@ -93,6 +93,7 @@ namespace Capture.Util
             Cef.Shutdown();
         }
 
+        //TODO: Need to check it for all browser instances
         private void OnDocumentCompleted(object sender, FrameLoadEndEventArgs e)
         {
             _IsBrowserReady = true;
