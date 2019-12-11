@@ -14,11 +14,11 @@ namespace Capture.Util
 {
     public class CaptureUtilityCef : ICaptureUtility
     {
-        private string _FilePath;
-        private string _OutputPath;
-        private int _Width;
-        private int _Height;
-        private int _StartDelay;
+        private readonly string _FilePath;
+        private readonly string _OutputPath;
+        private readonly int _Width;
+        private readonly int _Height;
+        private readonly int _StartDelay;
         private List<int> _OutputIntervalsInMilisecond = new List<int>();
         private static readonly object _object = new object();
         private bool _IsBrowserReady = false;

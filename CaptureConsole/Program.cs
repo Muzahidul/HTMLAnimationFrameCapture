@@ -12,12 +12,9 @@ namespace Capture
             string filePath = ConfigurationManager.AppSettings["inputFile"];
             string outputPath = ConfigurationManager.AppSettings["outputLocation"];
             string agent = ConfigurationManager.AppSettings["agent"];
-            int startDelay = 0;
-            int captureWidth = 0;
-            int captureHeight = 0;
-            int.TryParse(ConfigurationManager.AppSettings["startDelay"], out startDelay);
-            int.TryParse(ConfigurationManager.AppSettings["captureWidth"], out captureWidth);
-            int.TryParse(ConfigurationManager.AppSettings["captureHeight"], out captureHeight);
+            int.TryParse(ConfigurationManager.AppSettings["startDelay"], out int startDelay);
+            int.TryParse(ConfigurationManager.AppSettings["captureWidth"], out int captureWidth);
+            int.TryParse(ConfigurationManager.AppSettings["captureHeight"], out int captureHeight);
 
             List<int> outputIntervalsInMilisecond = new List<int>();
 
