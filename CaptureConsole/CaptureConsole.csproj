@@ -108,12 +108,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CaptureTimer.cs" />
+    <Compile Include="Configuration\CaptureTimer.cs" />
     <Compile Include="Utility\CaptureUtility.cs" />
     <Compile Include="Utility\CaptureUtilityCef.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\ICaptureUtility.cs" />
+    <Compile Include="Utility\Core\ICaptureUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
