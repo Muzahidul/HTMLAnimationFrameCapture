@@ -49,6 +49,7 @@ namespace Capture.Util
                         using (ChromiumWebBrowser vBrowser = new ChromiumWebBrowser(_FilePath))
                         {
                             vBrowser.FrameLoadEnd += OnDocumentCompleted;
+                            vBrowser.FrameLoadEnd += OnBrowserFrameLoadEnd;
                             vBrowser.Size = new Size(_Width, _Height);
 
                             while (!_IsBrowserReady)
@@ -95,6 +96,22 @@ namespace Capture.Util
         private void OnDocumentCompleted(object sender, FrameLoadEndEventArgs e)
         {
             _IsBrowserReady = true;
+        }
+
+        private void OnBrowserFrameLoadEnd(object sender, FrameLoadEndEventArgs args)
+        {
+            if (args.Frame.IsMain)
+            {
+                args.Browser.MainFrame.ExecuteJavaScriptAsync("document.body.style.overflow = 'hidden'");
+                for (int i = 0; i < args.Browser.GetFrameCount(); i++)
+                {
+                    var frame = args.Browser.GetFrame(i);
+                    if (frame != null)
+                    {
+                        frame.ExecuteJavaScriptAsync("document.body.style.overflow = 'hidden'");
+                    }
+                }
+            }
         }
 
         private void SaveScreenshot(Bitmap bitmap, int sequence)
